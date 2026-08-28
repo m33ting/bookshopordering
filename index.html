@@ -1,115 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Book Shop Ordering System</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-    th { background: #f4f4f4; }
-    input[type="number"] { width: 60px; }
-    .total { font-weight: bold; margin-top: 10px; }
-  </style>
+<meta charset="UTF-8">
+<title>Book Shop Ordering System</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; }
+  h1 { margin-bottom: 10px; }
+  .book-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .book-btn {
+    padding: 14px;
+    background: #4a6cf7;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: 0.2s;
+  }
+  .book-btn:hover {
+    background: #2f49c9;
+  }
+  #cart {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f4f4f4;
+    border-radius: 8px;
+  }
+</style>
 </head>
 <body>
 
-  <h1>Book Shop Ordering System</h1>
+<h1>Book Shop Ordering System</h1>
 
-  <form id="orderForm">
-    <table>
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Author</th>
-          <th>Barcode (ISBN)</th>
-          <th>Price (£)</th>
-          <th>Quantity</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>America: The 1960s</td>
-          <td>David Walliams</td>
-          <td>9780008460971</td>
-          <td><span class="price">8.99</span></td>
-          <td><input type="number" name="qty_9780008460971" min="0" value="0"></td>
-        </tr>
-        <tr>
-          <td>The Midnight Gang</td>
-          <td>David Walliams</td>
-          <td>9780008164664</td>
-          <td><span class="price">7.99</span></td>
-          <td><input type="number" name="qty_9780008164664" min="0" value="0"></td>
-        </tr>
-        <tr>
-          <td>The Somerset Tsunami</td>
-          <td>Emma Carroll</td>
-          <td>9780571339266</td>
-          <td><span class="price">6.99</span></td>
-          <td><input type="number" name="qty_9780571339266" min="0" value="0"></td>
-        </tr>
-        <tr>
-          <td>Alice’s Adventures in Wonderland</td>
-          <td>Lewis Carroll</td>
-          <td>9780571323366</td>
-          <td><span class="price">5.99</span></td>
-          <td><input type="number" name="qty_9780571323366" min="0" value="0"></td>
-        </tr>
-        <tr>
-          <td>Mr Stink</td>
-          <td>David Walliams</td>
-          <td>9780007279067</td>
-          <td><span class="price">6.99</span></td>
-          <td><input type="number" name="qty_9780007279067" min="0" value="0"></td>
-        </tr>
-        <tr>
-          <td>Christmas in Elfhelm</td>
-          <td>Matt Haig</td>
-          <td>9781786890719</td>
-          <td><span class="price">7.50</span></td>
-          <td><input type="number" name="qty_9781786890719" min="0" value="0"></td>
-        </tr>
-      </tbody>
-    </table>
+<p>Select books to add them to your order:</p>
 
-    <button type="button" onclick="calculateTotal()">Calculate Total</button>
-    <div class="total" id="totalDisplay">Total: £0.00</div>
+<div class="book-grid">
+  <button class="book-btn" onclick="addBook('The Parent Agency')">The Parent Agency</button>
+  <button class="book-btn" onclick="addBook('Virtually Christmas')">Virtually Christmas</button>
+  <button class="book-btn" onclick="addBook('The Magic Faraway Tree')">The Magic Faraway Tree</button>
+  <button class="book-btn" onclick="addBook('The Midnight Gang')">The Midnight Gang</button>
+  <button class="book-btn" onclick="addBook('Spaceboy')">Spaceboy</button>
+  <button class="book-btn" onclick="addBook('The Ice Monster')">The Ice Monster</button>
+  <button class="book-btn" onclick="addBook('Isadora Moon Puts on a Show')">Isadora Moon Puts on a Show</button>
+  <button class="book-btn" onclick="addBook('Isadora Moon Goes to Ballet')">Isadora Moon Goes to Ballet</button>
+  <button class="book-btn" onclick="addBook('Isadora Moon Has a Sleepover')">Isadora Moon Has a Sleepover</button>
+  <button class="book-btn" onclick="addBook('Isadora Moon Goes to a Wedding')">Isadora Moon Goes to a Wedding</button>
+  <button class="book-btn" onclick="addBook('Space Band')">Space Band</button>
+  <button class="book-btn" onclick="addBook('The Christmasaurus and the Naughty List')">The Christmasaurus and the Naughty List</button>
+  <button class="book-btn" onclick="addBook('The Monkey Who Fell from Space')">The Monkey Who Fell from Space</button>
+  <button class="book-btn" onclick="addBook('Somerset Tsunami')">Somerset Tsunami</button>
+  <button class="book-btn" onclick="addBook('Laura Marlin Mystery #1')">Laura Marlin Mystery #1</button>
+  <button class="book-btn" onclick="addBook('Laura Marlin Mystery #2')">Laura Marlin Mystery #2</button>
+  <button class="book-btn" onclick="addBook('Father Christmas and Me')">Father Christmas and Me</button>
+  <button class="book-btn" onclick="addBook('Hotel Flamingo: Frosty Fiesta')">Hotel Flamingo: Frosty Fiesta</button>
+  <button class="book-btn" onclick="addBook('Hotel Flamingo: Carnival Caper')">Hotel Flamingo: Carnival Caper</button>
+  <button class="book-btn" onclick="addBook('Hotel Flamingo: Fabulous Feast')">Hotel Flamingo: Fabulous Feast</button>
+  <button class="book-btn" onclick="addBook('Hotel Flamingo: Holiday Heatwave')">Hotel Flamingo: Holiday Heatwave</button>
+</div>
 
-    <h2>Customer Details</h2>
-    <label>
-      Name:
-      <input type="text" name="customer_name" required>
-    </label><br><br>
-    <label>
-      Email:
-      <input type="email" name="customer_email" >
-    </label><br><br>
+<div id="cart">
+  <h2>Your Order</h2>
+  <ul id="cartList"></ul>
+</div>
 
-    <button type="submit">Place Order</button>
-  </form>
-
-  <script>
-    function calculateTotal() {
-      const rows = document.querySelectorAll('tbody tr');
-      let total = 0;
-
-      rows.forEach(row => {
-        const price = parseFloat(row.querySelector('.price').textContent);
-        const qtyInput = row.querySelector('input[type="number"]');
-        const qty = parseInt(qtyInput.value || '0', 10);
-        total += price * qty;
-      });
-
-      document.getElementById('totalDisplay').textContent =
-        'Total: £' + total.toFixed(2);
-    }
-
-    document.getElementById('orderForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-      alert('Order submitted! (Here you would send data to the server.)');
-    });
-  </script>
+<script>
+  function addBook(title) {
+    const list = document.getElementById('cartList');
+    const item = document.createElement('li');
+    item.textContent = title;
+    list.appendChild(item);
+  }
+</script>
 
 </body>
 </html>
