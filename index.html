@@ -31,6 +31,10 @@
     background: #f4f4f4;
     border-radius: 8px;
   }
+  #total {
+    font-weight: bold;
+    margin-top: 10px;
+  }
 </style>
 </head>
 <body>
@@ -40,40 +44,46 @@
 <p>Select books to add them to your order:</p>
 
 <div class="book-grid">
-  <button class="book-btn" onclick="addBook('The Parent Agency')">The Parent Agency</button>
-  <button class="book-btn" onclick="addBook('Virtually Christmas')">Virtually Christmas</button>
-  <button class="book-btn" onclick="addBook('The Magic Faraway Tree')">The Magic Faraway Tree</button>
-  <button class="book-btn" onclick="addBook('The Midnight Gang')">The Midnight Gang</button>
-  <button class="book-btn" onclick="addBook('Spaceboy')">Spaceboy</button>
-  <button class="book-btn" onclick="addBook('The Ice Monster')">The Ice Monster</button>
-  <button class="book-btn" onclick="addBook('Isadora Moon Puts on a Show')">Isadora Moon Puts on a Show</button>
-  <button class="book-btn" onclick="addBook('Isadora Moon Goes to Ballet')">Isadora Moon Goes to Ballet</button>
-  <button class="book-btn" onclick="addBook('Isadora Moon Has a Sleepover')">Isadora Moon Has a Sleepover</button>
-  <button class="book-btn" onclick="addBook('Isadora Moon Goes to a Wedding')">Isadora Moon Goes to a Wedding</button>
-  <button class="book-btn" onclick="addBook('Space Band')">Space Band</button>
-  <button class="book-btn" onclick="addBook('The Christmasaurus and the Naughty List')">The Christmasaurus and the Naughty List</button>
-  <button class="book-btn" onclick="addBook('The Monkey Who Fell from Space')">The Monkey Who Fell from Space</button>
-  <button class="book-btn" onclick="addBook('Somerset Tsunami')">Somerset Tsunami</button>
-  <button class="book-btn" onclick="addBook('Laura Marlin Mystery #1')">Laura Marlin Mystery #1</button>
-  <button class="book-btn" onclick="addBook('Laura Marlin Mystery #2')">Laura Marlin Mystery #2</button>
-  <button class="book-btn" onclick="addBook('Father Christmas and Me')">Father Christmas and Me</button>
-  <button class="book-btn" onclick="addBook('Hotel Flamingo: Frosty Fiesta')">Hotel Flamingo: Frosty Fiesta</button>
-  <button class="book-btn" onclick="addBook('Hotel Flamingo: Carnival Caper')">Hotel Flamingo: Carnival Caper</button>
-  <button class="book-btn" onclick="addBook('Hotel Flamingo: Fabulous Feast')">Hotel Flamingo: Fabulous Feast</button>
-  <button class="book-btn" onclick="addBook('Hotel Flamingo: Holiday Heatwave')">Hotel Flamingo: Holiday Heatwave</button>
+  <button class="book-btn" onclick="addBook('The Parent Agency', 7.99)">The Parent Agency (£7.99)</button>
+  <button class="book-btn" onclick="addBook('Virtually Christmas', 6.99)">Virtually Christmas (£6.99)</button>
+  <button class="book-btn" onclick="addBook('The Magic Faraway Tree', 5.99)">The Magic Faraway Tree (£5.99)</button>
+  <button class="book-btn" onclick="addBook('The Midnight Gang', 8.99)">The Midnight Gang (£8.99)</button>
+  <button class="book-btn" onclick="addBook('Spaceboy', 9.99)">Spaceboy (£9.99)</button>
+  <button class="book-btn" onclick="addBook('The Ice Monster', 10.99)">The Ice Monster (£10.99)</button>
+  <button class="book-btn" onclick="addBook('Isadora Moon Puts on a Show', 4.99)">Isadora Moon Puts on a Show (£4.99)</button>
+  <button class="book-btn" onclick="addBook('Isadora Moon Goes to Ballet', 4.99)">Isadora Moon Goes to Ballet (£4.99)</button>
+  <button class="book-btn" onclick="addBook('Isadora Moon Has a Sleepover', 4.99)">Isadora Moon Has a Sleepover (£4.99)</button>
+  <button class="book-btn" onclick="addBook('Isadora Moon Goes to a Wedding', 4.99)">Isadora Moon Goes to a Wedding (£4.99)</button>
+  <button class="book-btn" onclick="addBook('Space Band', 7.99)">Space Band (£7.99)</button>
+  <button class="book-btn" onclick="addBook('The Christmasaurus and the Naughty List', 8.99)">The Christmasaurus and the Naughty List (£8.99)</button>
+  <button class="book-btn" onclick="addBook('The Monkey Who Fell from Space', 6.99)">The Monkey Who Fell from Space (£6.99)</button>
+  <button class="book-btn" onclick="addBook('Somerset Tsunami', 6.99)">Somerset Tsunami (£6.99)</button>
+  <button class="book-btn" onclick="addBook('Laura Marlin Mystery #1', 5.99)">Laura Marlin Mystery #1 (£5.99)</button>
+  <button class="book-btn" onclick="addBook('Laura Marlin Mystery #2', 5.99)">Laura Marlin Mystery #2 (£5.99)</button>
+  <button class="book-btn" onclick="addBook('Father Christmas and Me', 7.99)">Father Christmas and Me (£7.99)</button>
+  <button class="book-btn" onclick="addBook('Hotel Flamingo: Frosty Fiesta', 6.99)">Hotel Flamingo: Frosty Fiesta (£6.99)</button>
+  <button class="book-btn" onclick="addBook('Hotel Flamingo: Carnival Caper', 6.99)">Hotel Flamingo: Carnival Caper (£6.99)</button>
+  <button class="book-btn" onclick="addBook('Hotel Flamingo: Fabulous Feast', 6.99)">Hotel Flamingo: Fabulous Feast (£6.99)</button>
+  <button class="book-btn" onclick="addBook('Hotel Flamingo: Holiday Heatwave', 6.99)">Hotel Flamingo: Holiday Heatwave (£6.99)</button>
 </div>
 
 <div id="cart">
   <h2>Your Order</h2>
   <ul id="cartList"></ul>
+  <div id="total">Total: £0.00</div>
 </div>
 
 <script>
-  function addBook(title) {
+  let total = 0;
+
+  function addBook(title, price) {
     const list = document.getElementById('cartList');
     const item = document.createElement('li');
-    item.textContent = title;
+    item.textContent = `${title} — £${price.toFixed(2)}`;
     list.appendChild(item);
+
+    total += price;
+    document.getElementById('total').textContent = `Total: £${total.toFixed(2)}`;
   }
 </script>
 
