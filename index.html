@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Book Shop Ordering System</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background: #f4f4f4; }
+    input[type="number"] { width: 60px; }
+    .total { font-weight: bold; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+  <h1>Book Shop Ordering System</h1>
+
+  <form id="orderForm">
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Author</th>
+          <th>Barcode (ISBN)</th>
+          <th>Price (£)</th>
+          <th>Quantity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>America: The 1960s</td>
+          <td>David Walliams</td>
+          <td>9780008460971</td>
+          <td><span class="price">8.99</span></td>
+          <td><input type="number" name="qty_9780008460971" min="0" value="0"></td>
+        </tr>
+        <tr>
+          <td>The Midnight Gang</td>
+          <td>David Walliams</td>
+          <td>9780008164664</td>
+          <td><span class="price">7.99</span></td>
+          <td><input type="number" name="qty_9780008164664" min="0" value="0"></td>
+        </tr>
+        <tr>
+          <td>The Somerset Tsunami</td>
+          <td>Emma Carroll</td>
+          <td>9780571339266</td>
+          <td><span class="price">6.99</span></td>
+          <td><input type="number" name="qty_9780571339266" min="0" value="0"></td>
+        </tr>
+        <tr>
+          <td>Alice’s Adventures in Wonderland</td>
+          <td>Lewis Carroll</td>
+          <td>9780571323366</td>
+          <td><span class="price">5.99</span></td>
+          <td><input type="number" name="qty_9780571323366" min="0" value="0"></td>
+        </tr>
+        <tr>
+          <td>Mr Stink</td>
+          <td>David Walliams</td>
+          <td>9780007279067</td>
+          <td><span class="price">6.99</span></td>
+          <td><input type="number" name="qty_9780007279067" min="0" value="0"></td>
+        </tr>
+        <tr>
+          <td>Christmas in Elfhelm</td>
+          <td>Matt Haig</td>
+          <td>9781786890719</td>
+          <td><span class="price">7.50</span></td>
+          <td><input type="number" name="qty_9781786890719" min="0" value="0"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <button type="button" onclick="calculateTotal()">Calculate Total</button>
+    <div class="total" id="totalDisplay">Total: £0.00</div>
+
+    <h2>Customer Details</h2>
+    <label>
+      Name:
+      <input type="text" name="customer_name" required>
+    </label><br><br>
+    <label>
+      Email:
+      <input type="email" name="customer_email" >
+    </label><br><br>
+
+    <button type="submit">Place Order</button>
+  </form>
+
+  <script>
+    function calculateTotal() {
+      const rows = document.querySelectorAll('tbody tr');
+      let total = 0;
+
+      rows.forEach(row => {
+        const price = parseFloat(row.querySelector('.price').textContent);
+        const qtyInput = row.querySelector('input[type="number"]');
+        const qty = parseInt(qtyInput.value || '0', 10);
+        total += price * qty;
+      });
+
+      document.getElementById('totalDisplay').textContent =
+        'Total: £' + total.toFixed(2);
+    }
+
+    document.getElementById('orderForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      alert('Order submitted! (Here you would send data to the server.)');
+    });
+  </script>
+
+</body>
+</html>
