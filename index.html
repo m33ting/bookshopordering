@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Book Shop Scanner (Back Camera Only)</title>
+<title>Book Shop Scanner (Final Version)</title>
 
 <!-- Modern Quagga2 -->
 <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"></script>
@@ -11,7 +11,7 @@
   body { font-family: Arial; padding: 20px; background:#f7f7ff; }
   h1 { margin-bottom: 10px; }
 
-  /* ⭐ Small camera preview */
+  /* Small camera preview */
   #scanner {
     width: 180px;
     height: 140px;
@@ -50,6 +50,8 @@
 
 <div id="scanner"></div>
 <button onclick="startScanner()">Start Scanner</button>
+<button onclick="newOrder()">New Order</button>
+<button onclick="loadRecentOrder()">Load Recent Order</button>
 
 <audio id="beep">
   <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" type="audio/ogg">
@@ -78,7 +80,7 @@
 let cart = {};
 let total = 0;
 
-/* ⭐ All your books */
+/* All your books */
 const books = {
     "9780008460971": { title: "America: The 1960s", price: 8.99 },
     "9780008164664": { title: "The Midnight Gang", price: 8.99 },
@@ -104,7 +106,7 @@ const books = {
     "9781848128057": { title: "Hotel Flamingo: Holiday Heatwave", price: 6.99 }
 };
 
-/* ⭐ Back camera only */
+/* Back camera only */
 function startScanner() {
   Quagga.stop();
 
@@ -112,7 +114,7 @@ function startScanner() {
     inputStream: {
       type: "LiveStream",
       constraints: {
-        facingMode: { ideal: "environment" },   // ⭐ FORCE BACK CAMERA ONLY
+        facingMode: { ideal: "environment" },   // FORCE BACK CAMERA ONLY
         width: { ideal: 640 },
         height: { ideal: 480 }
       },
@@ -137,6 +139,7 @@ function startScanner() {
   });
 }
 
+/* Add scanned book */
 function addBook(code) {
   const book = books[code];
   if (!cart[code]) cart[code] = { ...book, qty: 1 };
@@ -146,6 +149,7 @@ function addBook(code) {
   updateCart();
 }
 
+/* Manual book entry */
 function addManualBook() {
   const name = manualName.value.trim();
   const price = parseFloat(manualPrice.value);
@@ -164,6 +168,7 @@ function addManualBook() {
   updateCart();
 }
 
+/* Update cart display */
 function updateCart() {
   cartDiv.innerHTML = "";
   total = 0;
@@ -191,6 +196,7 @@ function updateCart() {
   totalDiv.textContent = `Total: £${total.toFixed(2)}`;
 }
 
+/* Change quantity */
 function changeQty(code, amount) {
   cart[code].qty += amount;
   if (cart[code].qty <= 0) delete cart[code];
@@ -198,22 +204,47 @@ function changeQty(code, amount) {
   updateCart();
 }
 
+/* Remove item */
 function removeItem(code) {
   delete cart[code];
   saveCart();
   updateCart();
 }
 
+/* Checkout */
 function placeOrder() {
   const name = document.getElementById("name").value.trim();
   if (!name) return alert("Enter your name");
   alert("Order saved for " + name);
 }
 
+/* Save cart */
 function saveCart() {
   localStorage.setItem("bookCart", JSON.stringify(cart));
 }
 
+/* Load recent order */
+function loadRecentOrder() {
+  const saved = localStorage.getItem("bookCart");
+  if (!saved) {
+    alert("No recent order found.");
+    return;
+  }
+
+  cart = JSON.parse(saved);
+  updateCart();
+  alert("Recent order loaded!");
+}
+
+/* New order */
+function newOrder() {
+  cart = {};
+  saveCart();
+  updateCart();
+  alert("New order started!");
+}
+
+/* Load cart on startup */
 function loadCart() {
   const saved = localStorage.getItem("bookCart");
   if (saved) {
