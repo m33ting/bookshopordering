@@ -1,259 +1,202 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Book Shop Scanner (Final Version)</title>
-
-<!-- Modern Quagga2 -->
-<script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"></script>
-
+<title>Book Shop Ordering System</title>
 <style>
-  body { font-family: Arial; padding: 20px; background:#f7f7ff; }
-  h1 { margin-bottom: 10px; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 24px;
+    background: #f7f8fc;
+    color: #222;
+  }
+  h1 { margin: 0 0 10px; }
+  p { margin-bottom: 16px; }
 
-  /* Small camera preview */
-  #scanner {
-    width: 180px;
-    height: 140px;
-    border: 3px solid #333;
-    border-radius: 10px;
+  .top-bar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
     margin-bottom: 20px;
-    overflow: hidden;
+  }
+  #searchBar {
+    flex: 1;
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
   }
 
-  button { cursor:pointer; margin-right:10px; }
-
-  #cartBox {
-    background:white; padding:20px; border-radius:10px;
-    box-shadow:0 0 10px rgba(0,0,0,0.1); margin-top:20px;
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 20px;
+    align-items: start;
   }
 
-  .cart-item { display:flex; justify-content:space-between; margin:8px 0; }
-  .qty-btn { padding:4px 10px; margin:0 5px; }
-  .remove-btn {
-    background:#ff4d4d; color:white; border:none;
-    padding:5px 10px; border-radius:5px; cursor:pointer;
+  .book-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
   }
-
-  #manualAdd, #checkout {
-    margin-top:20px; padding:15px; background:#e8e8ff; border-radius:10px;
+  .book-btn {
+    padding: 14px;
+    background: #4a6cf7;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: 0.2s;
   }
+  .book-btn:hover { background: #2f49c9; }
 
-  input { padding:8px; width:100%; margin-bottom:10px; }
+  #cart {
+    position: sticky;
+    top: 20px;
+    padding: 18px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    min-height: 180px;
+  }
+  #cart h2 { margin-top: 0; }
+  #cartList {
+    max-height: 360px;
+    overflow-y: auto;
+    padding-left: 22px;
+  }
+  #total {
+    font-weight: bold;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #ddd;
+  }
+  #clearOrder {
+    width: 100%;
+    margin-top: 12px;
+    padding: 10px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  #clearOrder:hover { background: #c0392b; }
 
-  #total { font-weight:bold; margin-top:20px; font-size:18px; }
+  #recentOrders {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid #ddd;
+  }
+  #recentOrders h3 { margin: 0 0 8px; font-size: 16px; }
+  #recentList {
+    max-height: 180px;
+    overflow-y: auto;
+    padding-left: 20px;
+    margin: 0;
+  }
+  .recent-order { margin-bottom: 8px; font-size: 13px; }
+
+  @media (max-width: 800px) {
+    .layout { grid-template-columns: 1fr; }
+    #cart { position: static; }
+  }
 </style>
 </head>
 <body>
 
-<h1>Book Shop Scanner</h1>
+<h1>Book Shop Ordering System</h1>
 
-<div id="scanner"></div>
-<button onclick="startScanner()">Start Scanner</button>
-<button onclick="newOrder()">New Order</button>
-<button onclick="loadRecentOrder()">Load Recent Order</button>
-
-<audio id="beep">
-  <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" type="audio/ogg">
-</audio>
-
-<div id="cartBox">
-  <h2>Your Cart</h2>
-  <div id="cart"></div>
-  <div id="total">Total: £0.00</div>
+<div class="top-bar">
+  <input id="searchBar" type="search" placeholder="Search for a book..." oninput="filterBooks()">
 </div>
 
-<div id="manualAdd">
-  <h2>Add Book Manually</h2>
-  <input id="manualName" placeholder="Book Name">
-  <input id="manualPrice" type="number" step="0.01" placeholder="Price (£)">
-  <button onclick="addManualBook()">Add to Cart</button>
-</div>
+<div class="layout">
+  <main>
+    <p>Select books to add them to your order:</p>
 
-<div id="checkout">
-  <h2>Checkout</h2>
-  <input id="name" placeholder="Your Name">
-  <button onclick="placeOrder()">Place Order</button>
+    <div class="book-grid">
+      <button class="book-btn" data-title="The Parent Agency" onclick="addBook('The Parent Agency', 7.99)">The Parent Agency (£7.99)</button>
+      <button class="book-btn" data-title="Virtually Christmas" onclick="addBook('Virtually Christmas', 6.99)">Virtually Christmas (£6.99)</button>
+      <button class="book-btn" data-title="The Magic Faraway Tree" onclick="addBook('The Magic Faraway Tree', 5.99)">The Magic Faraway Tree (£5.99)</button>
+      <button class="book-btn" data-title="The Midnight Gang" onclick="addBook('The Midnight Gang', 8.99)">The Midnight Gang (£8.99)</button>
+      <button class="book-btn" data-title="Spaceboy" onclick="addBook('Spaceboy', 9.99)">Spaceboy (£9.99)</button>
+      <button class="book-btn" data-title="The Ice Monster" onclick="addBook('The Ice Monster', 10.99)">The Ice Monster (£10.99)</button>
+      <button class="book-btn" data-title="Isadora Moon Puts on a Show" onclick="addBook('Isadora Moon Puts on a Show', 4.99)">Isadora Moon Puts on a Show (£4.99)</button>
+      <button class="book-btn" data-title="Isadora Moon Goes to Ballet" onclick="addBook('Isadora Moon Goes to Ballet', 4.99)">Isadora Moon Goes to Ballet (£4.99)</button>
+      <button class="book-btn" data-title="Isadora Moon Has a Sleepover" onclick="addBook('Isadora Moon Has a Sleepover', 4.99)">Isadora Moon Has a Sleepover (£4.99)</button>
+      <button class="book-btn" data-title="Isadora Moon Goes to a Wedding" onclick="addBook('Isadora Moon Goes to a Wedding', 4.99)">Isadora Moon Goes to a Wedding (£4.99)</button>
+      <button class="book-btn" data-title="Space Band" onclick="addBook('Space Band', 7.99)">Space Band (£7.99)</button>
+      <button class="book-btn" data-title="The Christmasaurus and the Naughty List" onclick="addBook('The Christmasaurus and the Naughty List', 8.99)">The Christmasaurus and the Naughty List (£8.99)</button>
+      <button class="book-btn" data-title="The Monkey Who Fell from Space" onclick="addBook('The Monkey Who Fell from Space', 6.99)">The Monkey Who Fell from Space (£6.99)</button>
+      <button class="book-btn" data-title="Somerset Tsunami" onclick="addBook('Somerset Tsunami', 6.99)">Somerset Tsunami (£6.99)</button>
+      <button class="book-btn" data-title="Laura Marlin Mystery #1" onclick="addBook('Laura Marlin Mystery #1', 5.99)">Laura Marlin Mystery #1 (£5.99)</button>
+      <button class="book-btn" data-title="Laura Marlin Mystery #2" onclick="addBook('Laura Marlin Mystery #2', 5.99)">Laura Marlin Mystery #2 (£5.99)</button>
+      <button class="book-btn" data-title="Father Christmas and Me" onclick="addBook('Father Christmas and Me', 7.99)">Father Christmas and Me (£7.99)</button>
+      <button class="book-btn" data-title="Hotel Flamingo: Frosty Fiesta" onclick="addBook('Hotel Flamingo: Frosty Fiesta', 6.99)">Hotel Flamingo: Frosty Fiesta (£6.99)</button>
+      <button class="book-btn" data-title="Hotel Flamingo: Carnival Caper" onclick="addBook('Hotel Flamingo: Carnival Caper', 6.99)">Hotel Flamingo: Carnival Caper (£6.99)</button>
+      <button class="book-btn" data-title="Hotel Flamingo: Fabulous Feast" onclick="addBook('Hotel Flamingo: Fabulous Feast', 6.99)">Hotel Flamingo: Fabulous Feast (£6.99)</button>
+      <button class="book-btn" data-title="Hotel Flamingo: Holiday Heatwave" onclick="addBook('Hotel Flamingo: Holiday Heatwave', 6.99)">Hotel Flamingo: Holiday Heatwave (£6.99)</button>
+    </div>
+  </main>
+
+  <aside id="cart">
+    <h2>Your Order</h2>
+    <ul id="cartList"></ul>
+    <div id="total">Total: £0.00</div>
+    <button id="clearOrder" onclick="clearOrder()">Clear Order</button>
+
+    <div id="recentOrders">
+      <h3>Recent Orders</h3>
+      <ul id="recentList"></ul>
+    </div>
+  </aside>
 </div>
 
 <script>
-let cart = {};
-let total = 0;
+  let total = 0;
+  let currentOrder = [];
 
-/* All your books */
-const books = {
-    "9780008460971": { title: "America: The 1960s", price: 8.99 },
-    "9780008164664": { title: "The Midnight Gang", price: 8.99 },
-    "9780571339266": { title: "Somerset Tsunami", price: 6.99 },
-    "9780007279067": { title: "Mr Stink", price: 6.99 },
-    "9781786890719": { title: "Father Christmas and Me", price: 7.99 },
-    "9780007554485": { title: "The Parent Agency", price: 7.99 },
-    "9780008584412": { title: "Virtually Christmas", price: 6.99 },
-    "9781444952247": { title: "The Magic Faraway Tree", price: 5.99 },
-    "9780008467197": { title: "Spaceboy", price: 9.99 },
-    "9780008164706": { title: "The Ice Monster", price: 10.99 },
-    "9780192777188": { title: "Isadora Moon Puts on a Show", price: 4.99 },
-    "9780192744371": { title: "Isadora Moon Goes to Ballet", price: 4.99 },
-    "9780192767110": { title: "Isadora Moon Has a Sleepover", price: 4.99 },
-    "9780192779533": { title: "Isadora Moon Goes to a Wedding", price: 4.99 },
-    "9780241595916": { title: "Space Band", price: 7.99 },
-    "9780241407479": { title: "The Christmasaurus and the Naughty List", price: 8.99 },
-    "9780008544744": { title: "The Monkey Who Fell from Space", price: 6.99 },
-    "9781444014136": { title: "Laura Marlin Mystery #1", price: 5.99 },
-    "9781835587091": { title: "Hotel Flamingo: Frosty Fiesta", price: 6.99 },
-    "9781848128071": { title: "Hotel Flamingo: Carnival Caper", price: 6.99 },
-    "9781848128392": { title: "Hotel Flamingo: Fabulous Feast", price: 6.99 },
-    "9781848128057": { title: "Hotel Flamingo: Holiday Heatwave", price: 6.99 }
-};
+  function addBook(title, price) {
+    const list = document.getElementById('cartList');
+    const item = document.createElement('li');
+    item.textContent = `${title} — £${price.toFixed(2)}`;
+    list.appendChild(item);
 
-/* Back camera only */
-function startScanner() {
-  Quagga.stop();
+    currentOrder.push({ title, price });
+    total += price;
+    document.getElementById('total').textContent = `Total: £${total.toFixed(2)}`;
+  }
 
-  Quagga.init({
-    inputStream: {
-      type: "LiveStream",
-      constraints: {
-        facingMode: { ideal: "environment" },   // FORCE BACK CAMERA ONLY
-        width: { ideal: 640 },
-        height: { ideal: 480 }
-      },
-      target: document.querySelector('#scanner')
-    },
-    decoder: { readers: ["ean_reader"] }
-  }, err => {
-    if (err) {
-      alert("Camera failed. Run on localhost and allow camera access.");
-      console.error(err);
-      return;
+  function clearOrder() {
+    if (currentOrder.length > 0) {
+      const recentList = document.getElementById('recentList');
+      const order = document.createElement('li');
+      order.className = 'recent-order';
+      order.textContent = `${currentOrder.length} book(s) — £${total.toFixed(2)}`;
+      recentList.prepend(order);
     }
-    Quagga.start();
-  });
 
-  Quagga.onDetected(data => {
-    const code = data.codeResult.code;
-    document.getElementById("beep").play();
-
-    if (books[code]) addBook(code);
-    else alert("Unknown barcode: " + code);
-  });
-}
-
-/* Add scanned book */
-function addBook(code) {
-  const book = books[code];
-  if (!cart[code]) cart[code] = { ...book, qty: 1 };
-  else cart[code].qty++;
-
-  saveCart();
-  updateCart();
-}
-
-/* Manual book entry */
-function addManualBook() {
-  const name = manualName.value.trim();
-  const price = parseFloat(manualPrice.value);
-
-  if (!name || isNaN(price)) return alert("Enter valid name + price");
-
-  const code = "manual_" + name.toLowerCase().replace(/\s+/g, "_");
-
-  if (!cart[code]) cart[code] = { title: name, price, qty: 1 };
-  else cart[code].qty++;
-
-  manualName.value = "";
-  manualPrice.value = "";
-
-  saveCart();
-  updateCart();
-}
-
-/* Update cart display */
-function updateCart() {
-  cartDiv.innerHTML = "";
-  total = 0;
-
-  for (const code in cart) {
-    const item = cart[code];
-    total += item.qty * item.price;
-
-    const row = document.createElement("div");
-    row.className = "cart-item";
-
-    row.innerHTML = `
-      <span>${item.title} (£${item.price.toFixed(2)})</span>
-      <span>
-        <button class="qty-btn" onclick="changeQty('${code}', -1)">-</button>
-        ${item.qty}
-        <button class="qty-btn" onclick="changeQty('${code}', 1)">+</button>
-        <button class="remove-btn" onclick="removeItem('${code}')">Remove</button>
-      </span>
-    `;
-
-    cartDiv.appendChild(row);
+    currentOrder = [];
+    total = 0;
+    document.getElementById('cartList').innerHTML = '';
+    document.getElementById('total').textContent = 'Total: £0.00';
   }
 
-  totalDiv.textContent = `Total: £${total.toFixed(2)}`;
-}
-
-/* Change quantity */
-function changeQty(code, amount) {
-  cart[code].qty += amount;
-  if (cart[code].qty <= 0) delete cart[code];
-  saveCart();
-  updateCart();
-}
-
-/* Remove item */
-function removeItem(code) {
-  delete cart[code];
-  saveCart();
-  updateCart();
-}
-
-/* Checkout */
-function placeOrder() {
-  const name = document.getElementById("name").value.trim();
-  if (!name) return alert("Enter your name");
-  alert("Order saved for " + name);
-}
-
-/* Save cart */
-function saveCart() {
-  localStorage.setItem("bookCart", JSON.stringify(cart));
-}
-
-/* Load recent order */
-function loadRecentOrder() {
-  const saved = localStorage.getItem("bookCart");
-  if (!saved) {
-    alert("No recent order found.");
-    return;
+  function filterBooks() {
+    const query = document.getElementById('searchBar').value.toLowerCase().trim();
+    document.querySelectorAll('.book-btn').forEach(button => {
+      const title = button.dataset.title.toLowerCase();
+      button.style.display = title.includes(query) ? '' : 'none';
+    });
   }
-
-  cart = JSON.parse(saved);
-  updateCart();
-  alert("Recent order loaded!");
-}
-
-/* New order */
-function newOrder() {
-  cart = {};
-  saveCart();
-  updateCart();
-  alert("New order started!");
-}
-
-/* Load cart on startup */
-function loadCart() {
-  const saved = localStorage.getItem("bookCart");
-  if (saved) {
-    cart = JSON.parse(saved);
-    updateCart();
-  }
-}
-
-loadCart();
 </script>
 
 </body>
