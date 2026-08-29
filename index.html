@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Book Shop Scanner (Small Camera)</title>
+<title>Book Shop Scanner (Back Camera Only)</title>
 
 <!-- Modern Quagga2 -->
 <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"></script>
@@ -50,7 +50,6 @@
 
 <div id="scanner"></div>
 <button onclick="startScanner()">Start Scanner</button>
-<button onclick="switchCamera()">Switch Camera</button>
 
 <audio id="beep">
   <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" type="audio/ogg">
@@ -78,7 +77,6 @@
 <script>
 let cart = {};
 let total = 0;
-let currentCamera = "environment"; // back camera
 
 /* ⭐ All your books */
 const books = {
@@ -106,7 +104,7 @@ const books = {
     "9781848128057": { title: "Hotel Flamingo: Holiday Heatwave", price: 6.99 }
 };
 
-/* ⭐ Fully patched Quagga2 scanner */
+/* ⭐ Back camera only */
 function startScanner() {
   Quagga.stop();
 
@@ -114,7 +112,7 @@ function startScanner() {
     inputStream: {
       type: "LiveStream",
       constraints: {
-        facingMode: currentCamera,
+        facingMode: { ideal: "environment" },   // ⭐ FORCE BACK CAMERA ONLY
         width: { ideal: 640 },
         height: { ideal: 480 }
       },
@@ -137,11 +135,6 @@ function startScanner() {
     if (books[code]) addBook(code);
     else alert("Unknown barcode: " + code);
   });
-}
-
-function switchCamera() {
-  currentCamera = currentCamera === "environment" ? "user" : "environment";
-  startScanner();
 }
 
 function addBook(code) {
