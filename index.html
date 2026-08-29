@@ -2,21 +2,45 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Book Shop Scanner (Patched)</title>
+<title>Book Shop Scanner (Small Camera)</title>
 
-<!-- Updated Quagga2 (works on modern browsers) -->
+<!-- Modern Quagga2 -->
 <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"></script>
 
 <style>
   body { font-family: Arial; padding: 20px; background:#f7f7ff; }
-  #scanner { width: 350px; height: 250px; border: 3px solid #333; border-radius:10px; margin-bottom:20px; }
+  h1 { margin-bottom: 10px; }
+
+  /* ⭐ Small camera preview */
+  #scanner {
+    width: 180px;
+    height: 140px;
+    border: 3px solid #333;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+
   button { cursor:pointer; margin-right:10px; }
-  #cartBox { background:white; padding:20px; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1); margin-top:20px; }
+
+  #cartBox {
+    background:white; padding:20px; border-radius:10px;
+    box-shadow:0 0 10px rgba(0,0,0,0.1); margin-top:20px;
+  }
+
   .cart-item { display:flex; justify-content:space-between; margin:8px 0; }
   .qty-btn { padding:4px 10px; margin:0 5px; }
-  .remove-btn { background:#ff4d4d; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; }
-  #manualAdd, #checkout { margin-top:20px; padding:15px; background:#e8e8ff; border-radius:10px; }
+  .remove-btn {
+    background:#ff4d4d; color:white; border:none;
+    padding:5px 10px; border-radius:5px; cursor:pointer;
+  }
+
+  #manualAdd, #checkout {
+    margin-top:20px; padding:15px; background:#e8e8ff; border-radius:10px;
+  }
+
   input { padding:8px; width:100%; margin-bottom:10px; }
+
   #total { font-weight:bold; margin-top:20px; font-size:18px; }
 </style>
 </head>
@@ -56,7 +80,7 @@ let cart = {};
 let total = 0;
 let currentCamera = "environment"; // back camera
 
-// ALL YOUR BOOKS
+/* ⭐ All your books */
 const books = {
     "9780008460971": { title: "America: The 1960s", price: 8.99 },
     "9780008164664": { title: "The Midnight Gang", price: 8.99 },
@@ -82,7 +106,7 @@ const books = {
     "9781848128057": { title: "Hotel Flamingo: Holiday Heatwave", price: 6.99 }
 };
 
-// ⭐ PATCHED WORKING SCANNER
+/* ⭐ Fully patched Quagga2 scanner */
 function startScanner() {
   Quagga.stop();
 
@@ -91,14 +115,12 @@ function startScanner() {
       type: "LiveStream",
       constraints: {
         facingMode: currentCamera,
-        width: { ideal: 1280 },
-        height: { ideal: 720 }
+        width: { ideal: 640 },
+        height: { ideal: 480 }
       },
       target: document.querySelector('#scanner')
     },
-    decoder: {
-      readers: ["ean_reader"]
-    }
+    decoder: { readers: ["ean_reader"] }
   }, err => {
     if (err) {
       alert("Camera failed. Run on localhost and allow camera access.");
